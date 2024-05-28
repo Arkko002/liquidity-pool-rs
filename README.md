@@ -5,4 +5,5 @@ Liquidity Pool implementation in Rust
 
 ## Sources
 [Marinade docs](https://docs.marinade.finance/)
+
 [Marinade source code](https://github.com/marinade-finance/liquid-staking-program)
