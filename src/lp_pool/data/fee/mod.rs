@@ -1,8 +1,9 @@
 use std::fmt::Display;
 
-use crate::lp_pool::error::Error;
+use crate::error::{Error, Result};
+use crate::lp_pool::error::Error as LpPoolError;
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct Fee {
     pub basis_points: u32,
 }
@@ -19,22 +20,28 @@ impl Display for Fee {
 }
 
 impl Fee {
-    // TODO: pub const MAX_BASIS_POINTS_CENTS: u32 = 1_000_000; //100%
     pub const MAX_BASIS_POINTS: u32 = 10_000; //100%
 
     pub const fn from_basis_points(basis_points: u32) -> Self {
         Self { basis_points }
     }
 
-    pub fn check(&self) -> Result<(), Error> {
+    pub fn check(self) -> Result<()> {
         if self.basis_points > Self::MAX_BASIS_POINTS {
-            return Err(Error::BasisPointsOverflow(self.basis_points));
+            return Err(Error::LpPool(LpPoolError::BasisPointsOverflow(
+                self.basis_points,
+            )));
         }
         Ok(())
     }
 
-    pub fn apply(&self, lamports: u64) -> u64 {
-        (lamports as u128 * self.basis_points as u128 / Self::MAX_BASIS_POINTS as u128) as u64
+    pub fn apply(self, lamports: u64) -> Result<u64> {
+        let fee = u64::try_from(
+            u128::from(lamports) * u128::from(self.basis_points)
+                / u128::from(Self::MAX_BASIS_POINTS),
+        )
+        .map_err(|_| Error::CalculationError)?;
+        Ok(lamports - fee)
     }
 }
 
@@ -45,7 +52,7 @@ mod fee_tests {
     fn it_creates_fee_with_valid_basis_points() {
         let fee = Fee { basis_points: 10 };
         assert!(fee.check().is_ok());
-        assert_eq!(fee.apply(10000), 10);
+        assert_eq!(fee.apply(10000).unwrap(), 9990);
     }
 
     #[test]

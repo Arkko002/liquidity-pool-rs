@@ -7,6 +7,8 @@ use crate::lp_pool::error::Error as LpPoolError;
 pub enum Error {
     #[from]
     LpPool(LpPoolError),
+
+    CalculationError,
 }
 
 impl Display for Error {
