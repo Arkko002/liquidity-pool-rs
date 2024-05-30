@@ -1,5 +1,5 @@
 # liquidity-pool-rs
-[![Cargo Build & Test](https://github.com/Arkko002/liquidity-pool-rs/actions/workflows/main.yml/badge.svg)](https://github.com/Arkko002/liquidity-pool-rs/actions/workflows/main.yml)
+[![Cargo Build & Test](https://github.com/Arkko002/liquidity-pool-rs/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/Arkko002/liquidity-pool-rs/actions/workflows/main.yml)
 
 Liquidity Pool implementation in Rust
 
